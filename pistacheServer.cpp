@@ -1,0 +1,18 @@
+#include <pistache/endpoint.h>
+#include <pistache/http.h>
+#include <iostream>
+#include "RequestHandler.h"
+
+using namespace Pistache;
+
+int main() 
+
+{
+    Http::Endpoint server(Address(Ipv4::any(), Port(9081)));
+    auto opts = Http::Endpoint::options().threads(1);
+    server.init(opts);
+    auto handler = std::make_shared<RequestHandler>();
+    server.setHandler(handler);
+    server.serve();  
+    return 0;
+}
