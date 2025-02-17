@@ -1,24 +1,42 @@
-#include "RequestHandler.h"
-#include <opencv2/opencv.hpp>
+#include <pistache/http.h>
+#include <pistache/router.h>
+#include <pistache/endpoint.h>
+#include <iostream>
+#include <unordered_map>
+#include <functional>
 
 using namespace Pistache;
 
-void RequestHandler::onRequest(const Http::Request &request, Http::ResponseWriter response) {
-    auto query = request.query();
-    Http::Method method = request.method();
-    // Check the method type
-    if (method == Http::Method::Get) {
-        std::cout << "Received a GET request" << std::endl;
-    } else if (method == Http::Method::Post) {
-        std::cout << "Received a POST request" << std::endl;
-    } else if (method == Http::Method::Put) {
-        std::cout << "Received a PUT request" << std::endl;
-    } else if (method == Http::Method::Delete) {
-        std::cout << "Received a DELETE request" << std::endl;
-    } else {
-        std::cout << "Received an unknown request type" << std::endl;
+// Define handler functions
+std::string handleHello(const Http::Request& request) {
+    return "Hello from Pistache!";
+}
+
+std::string handleStatus(const Http::Request& request) {
+    return "Server is running...";
+}
+
+class RequestHandler {
+private:
+    std::unordered_map<std::string, std::function<std::string(const Http::Request&)>> routerMapForFunction;
+
+public:
+    RequestHandler() {
+        // Register handler functions
+        routerMapForFunction["/hello"] = handleHello;
+        routerMapForFunction["/status"] = handleStatus;
     }
 
-    // Continue processing based on method
-    response.send(Http::Code::Ok, "Request processed");
-}
+    void onRequest(const Http::Request& request, Http::ResponseWriter response) {
+        std::string path = request.resource();
+
+        // Check if the path exists in the router map
+        auto it = routerMapForFunction.find(path);
+        if (it != routerMapForFunction.end()) {
+            std::string responseData = it->second(request);  // Call the mapped function
+            response.send(Http::Code::Ok, responseData);
+        } else {
+            response.send(Http::Code::Not_Found, "404 - Not Found");
+        }
+    }
+};
