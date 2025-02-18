@@ -1,24 +1,21 @@
-#ifndef REQUESTHANDLER_H
-#define REQUESTHANDLER_H
-
 #include <pistache/http.h>
 #include <pistache/router.h>
-#include <iostream>
+#include <unordered_map>
+#include <functional>
 
-class RequestHandler : public Pistache::Http::Handler 
-{
+class RequestHandler : public Pistache::Http::Handler {
 public:
-    RequestHandler() 
-    {
-    }
+    HTTP_PROTOTYPE(RequestHandler)
 
-    std::shared_ptr<Pistache::Tcp::Handler> clone() const override 
-    {
-        return std::make_shared<RequestHandler>();  // Avoid copying, use default constructor
-    }
+     std::unordered_map<std::string, std::function<std::string(const Pistache::Http::Request&)>> routerMapForFunction = {
+        {"/hello", [](const Pistache::Http::Request& request) { return "Hello from Pistache!"; }},
+        {"/status", [](const Pistache::Http::Request& request) { return "Server is running..."; }}
+    };
+
+    RequestHandler() = default;
+
     void onRequest(const Pistache::Http::Request &request, Pistache::Http::ResponseWriter response) override;
+
 private:
     Pistache::Rest::Router router;
 };
-
-#endif // REQUESTHANDLER_H
