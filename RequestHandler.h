@@ -8,11 +8,12 @@
 class RequestHandler : public Pistache::Http::Handler 
 {
 public:
-    RequestHandler() {
+    RequestHandler() 
+    {
     }
 
-   // Correct return type to match Pistache's inheritance
-    std::shared_ptr<Pistache::Tcp::Handler> clone() const override {
+    std::shared_ptr<Pistache::Tcp::Handler> clone() const override 
+    {
         return std::make_shared<RequestHandler>();  // Avoid copying, use default constructor
     }
     void onRequest(const Pistache::Http::Request &request, Pistache::Http::ResponseWriter response) override;
