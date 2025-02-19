@@ -1,19 +1,35 @@
-#include "RequestHandler.h"
-#include <iostream>
-#include <pistache/endpoint.h>
 #include <pistache/http.h>
+#include <pistache/router.h>
+#include <pistache/endpoint.h>
+#include <iostream>
+#include <fstream>
+#include "RequestHandler.h"
 
 using namespace Pistache;
 
-int main()
-
+void handleImageUpload(const Pistache::Http::Request& request) 
 {
-  Http::Endpoint server(Address(Ipv4::any(), Port(9081)));
-  auto opts =
-      Http::Endpoint::options().threads(1).maxRequestSize(1024 * 1024 * 10);
-  server.init(opts);
-  auto handler = std::make_shared<RequestHandler>();
-  server.setHandler(handler);
-  server.serve();
-  return 0;
+     if (!request.headers().has<Http::Header::ContentType>()) 
+        {
+            std::cout<<"This has hit"<<std::endl;
+            return;
+        }
+        auto contentType = request.headers().get<Http::Header::ContentType>();
+        std::ofstream file("uploaded_image.jpg", std::ios::binary);
+        file << request.body();
+        file.close();
+}
+
+// Corrected function definition
+void RequestHandler::onRequest(const Pistache::Http::Request& request, Pistache::Http::ResponseWriter response) {
+    std::string path = request.resource();
+
+    // Check if the path exists in the router map
+    auto it = routerMapForFunction.find(path);
+    if (it != routerMapForFunction.end()) {
+        it->second(request);  // Call the mapped function
+        response.send(Pistache::Http::Code::Ok);
+    } else {
+        response.send(Pistache::Http::Code::Not_Found, "404 - Not Found");
+    }
 }
