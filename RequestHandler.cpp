@@ -1,24 +1,19 @@
 #include "RequestHandler.h"
 #include <iostream>
+#include <pistache/endpoint.h>
+#include <pistache/http.h>
 
-std::string handleHello(const Pistache::Http::Request& request) {
-    return "Hello from Pistache!";
-}
+using namespace Pistache;
 
-std::string handleStatus(const Pistache::Http::Request& request) {
-    return "Server is running...";
-}
+int main()
 
-// Corrected function definition
-void RequestHandler::onRequest(const Pistache::Http::Request& request, Pistache::Http::ResponseWriter response) {
-    std::string path = request.resource();
-
-    // Check if the path exists in the router map
-    auto it = routerMapForFunction.find(path);
-    if (it != routerMapForFunction.end()) {
-        std::string responseData = it->second(request);  // Call the mapped function
-        response.send(Pistache::Http::Code::Ok, responseData);
-    } else {
-        response.send(Pistache::Http::Code::Not_Found, "404 - Not Found");
-    }
+{
+  Http::Endpoint server(Address(Ipv4::any(), Port(9081)));
+  auto opts =
+      Http::Endpoint::options().threads(1).maxRequestSize(1024 * 1024 * 10);
+  server.init(opts);
+  auto handler = std::make_shared<RequestHandler>();
+  server.setHandler(handler);
+  server.serve();
+  return 0;
 }
