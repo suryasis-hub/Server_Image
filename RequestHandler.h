@@ -3,14 +3,24 @@
 #include <unordered_map>
 #include <functional>
 
+
+void handleImageUpload(const Pistache::Http::Request& request);
+
 class RequestHandler : public Pistache::Http::Handler {
 public:
     HTTP_PROTOTYPE(RequestHandler)
-
-     std::unordered_map<std::string, std::function<std::string(const Pistache::Http::Request&)>> routerMapForFunction = {
-        {"/hello", [](const Pistache::Http::Request& request) { return "Hello from Pistache!"; }},
-        {"/status", [](const Pistache::Http::Request& request) { return "Server is running..."; }}
+     std::unordered_map<std::string, std::function<void(const Pistache::Http::Request&)>> routerMapForFunction = 
+     {
+    {"/hello", [](const Pistache::Http::Request& request) 
+    { 
+    }},
+    {"/upload", [](const Pistache::Http::Request& request) 
+        { 
+            handleImageUpload(request);
+        }}
     };
+
+
 
     RequestHandler() = default;
 
