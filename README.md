@@ -52,18 +52,19 @@ The server will start listening on `http://localhost:9081`.
 ### **1. Health Check**
 **Request:**
 ```sh
-curl -X GET http://localhost:9081/status
+curl -X GET http://localhost:9081/hello
 ```
-**Response:**
-```
-Server is running...
-```
+
 
 ## **Testing the Server**
 ### **Option 1: Using Curl**
 ```sh
 curl -X GET http://localhost:9081/hello
 ```
+```sh
+curl -X POST http://localhost:9081/upload  -H "Content-Type: image/jpeg" --data-binary @"/Users/suryasispaul/Downloads/IMG_4238.jpg"
+```
+
 
 ## **Future Enhancements**
 - Add OpenCV processing functions to handle received images.
