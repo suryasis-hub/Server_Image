@@ -16,7 +16,7 @@ sudo apt install clang  # Linux
 Compile the Background Processor using:
 
 ```sh
-clang++ -o BackGroundProcessor main.cpp -I/opt/homebrew/include -L/opt/homebrew/lib -std=c++17
+clang++ -I../external/loguru -o BackgroundProcessor4 main.cpp ../external/loguru/loguru.cpp -std=c++17
 ```
 
 ## Running the Application
