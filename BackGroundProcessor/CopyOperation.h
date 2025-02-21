@@ -5,6 +5,7 @@
 #include <fstream>
 #include <filesystem>
 #include "IOperation.h"
+#include "../external/loguru/loguru.hpp"
 
 class CopyOperation : public IOperation 
 {
@@ -13,7 +14,7 @@ class CopyOperation : public IOperation
 		    std::filesystem::path sourcePath(filePath);
 
 		if (!std::filesystem::exists(sourcePath)) {
-			std::cerr << "Error: Source file does not exist - " << filePath << std::endl;
+			LOG_F(ERROR, "Source file does not exist: %s", sourcePath.c_str());
 			return "";
 		}
 
@@ -23,7 +24,7 @@ class CopyOperation : public IOperation
 			std::filesystem::copy_file(sourcePath, destinationPath, std::filesystem::copy_options::overwrite_existing);
 			return destinationPath.string();
 		} catch (const std::filesystem::filesystem_error &e) {
-			std::cerr << "File copy error: " << e.what() << std::endl;
+			LOG_F(ERROR, "Error: Source file does not exist");
 			return "";
 		}
 	}

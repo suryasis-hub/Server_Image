@@ -1,11 +1,3 @@
-/******************************************************************************
-
-Welcome to GDB Online.
-GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
-C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
-Code, Compile, Run and Debug online from anywhere in world.
-
-*******************************************************************************/
 #include <iostream>
 #include <memory>
 
@@ -15,10 +7,13 @@ Code, Compile, Run and Debug online from anywhere in world.
 #include "IOperation.h"
 #include "CopyOperation.h"
 #include "OperationType.h"
+#include "../external/loguru/loguru.hpp"
 
 
-int main()
+int main(int argc, char* argv[])
 {
+    loguru::init(argc, argv);
+    LOG_F(INFO, "Background processor started");
     std::unique_ptr<FileQueue> queue = std::make_unique<FileQueue>("Images.txt");
     std::unique_ptr<IOperation>  fileOperation = FileOperationFactory::GetOperation(OperationType::COPY);
     while(true)

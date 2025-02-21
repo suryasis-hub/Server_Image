@@ -9,11 +9,6 @@ using namespace Pistache;
 
 void handleImageUpload(const Pistache::Http::Request& request) 
 {
-     if (!request.headers().has<Http::Header::ContentType>()) 
-        {
-            std::cout<<"This has hit"<<std::endl;
-            return;
-        }
         auto contentType = request.headers().get<Http::Header::ContentType>();
         std::ofstream file("uploaded_image.jpg", std::ios::binary);
         file << request.body();
