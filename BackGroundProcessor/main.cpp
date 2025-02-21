@@ -11,20 +11,22 @@ Code, Compile, Run and Debug online from anywhere in world.
 
 #include "IQueue.h"
 #include "FileQueue.h"
+#include "FileOperationFactory.h"
 #include "IOperation.h"
 #include "CopyOperation.h"
+#include "OperationType.h"
 
 
 int main()
 {
     std::unique_ptr<FileQueue> queue = std::make_unique<FileQueue>("Images.txt");
-    std::unique_ptr<IOperation> copyFileOperation = std::make_unique<CopyOperation>();
+    std::unique_ptr<IOperation>  fileOperation = FileOperationFactory::GetOperation(OperationType::COPY);
     while(true)
     {
         auto fileValue = queue->pop();
         if (fileValue.has_value())
         {
-            copyFileOperation->doOperation(*fileValue);
+            fileOperation->doOperation(*fileValue);
         }
     }
     return 0;
