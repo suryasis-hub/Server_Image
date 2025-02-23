@@ -28,7 +28,7 @@ brew install cmake make clang
 Use the following `clang++` command to compile the server:
 
 ```sh
-clang++ -o server pistacheServer.cpp RequestHandler.cpp -I/opt/homebrew/include -L/opt/homebrew/lib -lpistache -lpthread -std=c++17
+clang++ -o server pistacheServer.cpp RequestHandler.cpp  external/loguru/loguru.cpp -I/opt/homebrew/include -L/opt/homebrew/lib -lpistache -lpthread -std=c++17
 ```
 
 **Explanation of flags:**
