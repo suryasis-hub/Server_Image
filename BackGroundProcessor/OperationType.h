@@ -3,5 +3,8 @@
 enum class OperationType 
 {
     COPY,
+    RESIZE,
+    COMPRESS,
+    UNKNOWN
 };
 #endif // OPERATION_TYPE_H
