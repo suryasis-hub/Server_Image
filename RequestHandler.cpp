@@ -11,8 +11,12 @@ using namespace Pistache;
 void handleImageUpload(const Pistache::Http::Request& request) 
 {
     auto contentType = request.headers().get<Http::Header::ContentType>();
-    std::ofstream file("uploaded_image.jpg", std::ios::binary);
+    auto queryParams = request.query();
+    std::string filename = queryParams.get("filename").value_or("uploaded_image.jpg");
+    std::string operation =  queryParams.get("operation").value_or("COPY");
+    std::ofstream file(filename, std::ios::binary);
     file << request.body();
+    LOG_F(INFO, "File name  and operation%s, %s", filename.c_str(), operation.c_str());
     file.close();
 }
 
