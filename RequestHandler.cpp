@@ -4,27 +4,72 @@
 #include <iostream>
 #include <fstream>
 #include "RequestHandler.h"
+#include "external/loguru/loguru.hpp"
 
 using namespace Pistache;
 
 void handleImageUpload(const Pistache::Http::Request& request) 
 {
-        auto contentType = request.headers().get<Http::Header::ContentType>();
-        std::ofstream file("uploaded_image.jpg", std::ios::binary);
-        file << request.body();
-        file.close();
+    auto contentType = request.headers().get<Http::Header::ContentType>();
+    std::ofstream file("uploaded_image.jpg", std::ios::binary);
+    file << request.body();
+    file.close();
 }
 
-// Corrected function definition
-void RequestHandler::onRequest(const Pistache::Http::Request& request, Pistache::Http::ResponseWriter response) {
+void serveImage(const Pistache::Http::Request &request, Pistache::Http::ResponseWriter &response) 
+{
+    auto query = request.query();
+    std::string fileName = query.get("file").value_or("sample.jpg");
+    LOG_F(INFO, "File name %s", fileName.c_str());
+
+    std::string imagePath = fileName; 
+    if (!std::filesystem::exists(imagePath)) 
+    {
+        response.send(Pistache::Http::Code::Not_Found, "Image not found");
+        return;
+    }
+
+    std::ifstream file(imagePath, std::ios::binary | std::ios::ate);
+    if (!file) 
+    {
+        response.send(Pistache::Http::Code::Internal_Server_Error, "Error opening image");
+        return;
+    }
+
+    std::streamsize fileSize = file.tellg();
+    file.seekg(0, std::ios::beg);
+    std::vector<char> buffer(fileSize);
+
+    if (!file.read(buffer.data(), fileSize)) 
+    {
+        response.send(Pistache::Http::Code::Internal_Server_Error, "Error reading image");
+        return;
+    }
+    file.close();
+
+    std::string contentType = "image/jpeg"; 
+    response.headers().add<Pistache::Http::Header::ContentType>(contentType);
+    response.send(Pistache::Http::Code::Ok, buffer.data(), buffer.size(), Pistache::Http::Mime::MediaType::fromString(contentType));
+}
+
+void RequestHandler::onRequest(const Pistache::Http::Request& request, Pistache::Http::ResponseWriter response) 
+{
     std::string path = request.resource();
 
     // Check if the path exists in the router map
     auto it = routerMapForFunction.find(path);
-    if (it != routerMapForFunction.end()) {
+    if (it != routerMapForFunction.end()) 
+    {
         it->second(request);  // Call the mapped function
         response.send(Pistache::Http::Code::Ok);
-    } else {
+    } 
+    else if(path.find("download") != std::string::npos)
+    {
+        serveImage(request, response);
+    }
+    else 
+
+    {
         response.send(Pistache::Http::Code::Not_Found, "404 - Not Found");
     }
 }
