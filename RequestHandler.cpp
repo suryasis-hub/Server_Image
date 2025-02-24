@@ -5,7 +5,9 @@
 #include <fstream>
 #include "RequestHandler.h"
 #include "external/loguru/loguru.hpp"
-
+#include "BackgroundProcessor/IQueue.h"
+#include "BackgroundProcessor/IOperation.h"
+#include "BackgroundProcessor/FileOperationFactory.h"
 using namespace Pistache;
 
 void handleImageUpload(const Pistache::Http::Request& request) 
@@ -18,6 +20,8 @@ void handleImageUpload(const Pistache::Http::Request& request)
     file << request.body();
     LOG_F(INFO, "File name  and operation%s, %s", filename.c_str(), operation.c_str());
     file.close();
+    std::unique_ptr<IOperation>  fileOperation = FileOperationFactory::GetOperation(stringToOperationType(operation));
+    fileOperation->doOperation(filename);
 }
 
 void serveImage(const Pistache::Http::Request &request, Pistache::Http::ResponseWriter &response) 
