@@ -63,12 +63,10 @@ void serveImage(const Pistache::Http::Request &request, Pistache::Http::Response
 void RequestHandler::onRequest(const Pistache::Http::Request& request, Pistache::Http::ResponseWriter response) 
 {
     std::string path = request.resource();
-
-    // Check if the path exists in the router map
     auto it = routerMapForFunction.find(path);
     if (it != routerMapForFunction.end()) 
     {
-        it->second(request);  // Call the mapped function
+        it->second(request);
         response.send(Pistache::Http::Code::Ok);
     } 
     else if(path.find("download") != std::string::npos)
